@@ -831,9 +831,13 @@ function answerVF(val) {
   document.querySelectorAll(".tf-btn").forEach(b => b.disabled = true);
   const btns = document.querySelectorAll(".tf-btn");
   const ok = val === q.correcta;
-  btns[0].classList.add(val === true ? (q.correcta === true ? "correct" : "wrong") : "");
-  btns[1].classList.add(val === false ? (q.correcta === false ? "correct" : "wrong") : "");
-  if (!ok) { (q.correcta === true ? btns[0] : btns[1]).classList.add("correct"); }
+  if (val === true) {
+    btns[0].classList.add(ok ? "correct" : "wrong");
+    if (!ok) btns[1].classList.add("correct");
+  } else {
+    btns[1].classList.add(ok ? "correct" : "wrong");
+    if (!ok) btns[0].classList.add("correct");
+  }
   showFeedback(ok, q);
 }
 
