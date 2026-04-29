@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Evaluación de Conocimientos — Gestión de Procesos</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --v: #1B7A4E; --vc: #2AA76A; --vs: #E8F7F0; --vb: #0d4a2e;
+    --a: #1A3A6B; --ac: #2C5BAA; --as: #EBF0FA;
+    --d: #C8993A; --ds: #FDF4E3;
+    --r: #C0392B; --rs: #FDEAEA;
+    --bg: #F7F8FA; --card: #FFFFFF;
+    --t1: #0F1923; --t2: #4A5568; --t3: #9AA5B4;
+    --border: #E8ECF0; --border2: #D1D8E0;
+    --shadow: 0 2px 12px rgba(15,25,35,0.07), 0 1px 3px rgba(15,25,35,0.04);
+    --shadow-lg: 0 8px 40px rgba(15,25,35,0.12), 0 2px 8px rgba(15,25,35,0.06);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--t1);
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  /* ── LAYOUT ── */
+  .page { display: none; animation: pageIn .4s ease; }
+  .page.active { display: block; }
+  @keyframes pageIn { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+
+  .shell {
+    max-width: 620px;
+    margin: 0 auto;
+    padding: 2rem 1.25rem 4rem;
+  }
+
+  /* ── TOP BAR ── */
+  .topbar {
+    background: linear-gradient(135deg, var(--a) 0%, var(--v) 100%);
+    padding: .9rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,.18);
+  }
+  .topbar-brand { display: flex; align-items: center; gap: .6rem; }
+  .topbar-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #4ade80;
+    box-shadow: 0 0 0 3px rgba(74,222,128,.25);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%,100%{box-shadow:0 0 0 3px rgba(74,222,128,.25)} 50%{box-shadow:0 0 0 6px rgba(74,222,128,.1)} }
+  .topbar-name { color: #fff; font-size: 13px; font-weight: 600; letter-spacing: .3px; }
+  .topbar-tag {
+    background: rgba(255,255,255,.15);
+    color: rgba(255,255,255,.9);
+    font-size: 11px; font-weight: 500;
+    padding: 3px 10px; border-radius: 20px;
+    border: 1px solid rgba(255,255,255,.2);
+  }
+
+  /* ── PROGRESS ── */
+  .prog-wrap { padding: .75rem 1.5rem; background: #fff; border-bottom: 1px solid var(--border); }
+  .prog-meta { display: flex; justify-content: space-between; font-size: 11.5px; color: var(--t3); margin-bottom: 5px; font-weight: 500; }
+  .prog-track { height: 4px; background: var(--border); border-radius: 4px; overflow: hidden; }
+  .prog-bar { height: 100%; background: linear-gradient(90deg, var(--v), var(--vc)); border-radius: 4px; transition: width .5s cubic-bezier(.4,0,.2,1); }
+
+  /* ── COVER / REGISTER ── */
+  .cover-hero {
+    text-align: center;
+    padding: 2.5rem 0 1.5rem;
+  }
+  .cover-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--vs); color: var(--v);
+    border: 1px solid rgba(27,122,78,.2);
+    border-radius: 20px; padding: 5px 14px;
+    font-size: 12px; font-weight: 600;
+    letter-spacing: .5px; text-transform: uppercase;
+    margin-bottom: 1.25rem;
+  }
+  .cover-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(26px, 5vw, 36px);
+    color: var(--a);
+    line-height: 1.2;
+    margin-bottom: .75rem;
+  }
+  .cover-sub {
+    font-size: 15px; color: var(--t2);
+    max-width: 460px; margin: 0 auto 2rem;
+    line-height: 1.65;
+  }
+  .cover-pills {
+    display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;
+    margin-bottom: 2rem;
+  }
+  .pill {
+    display: flex; align-items: center; gap: 5px;
+    background: #fff; border: 1px solid var(--border2);
+    border-radius: 20px; padding: 5px 12px;
+    font-size: 12px; font-weight: 500; color: var(--t2);
+  }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.75rem;
+    box-shadow: var(--shadow);
+    margin-bottom: 1rem;
+  }
+
+  /* ── FORM ── */
+  .form-row { margin-bottom: 1.1rem; }
+  .form-label {
+    display: block; font-size: 13px; font-weight: 600;
+    color: var(--t1); margin-bottom: 6px;
+  }
+  .form-label span { color: var(--r); margin-left: 2px; }
+  .form-input, .form-select {
+    width: 100%;
+    padding: 11px 14px;
+    border: 1.5px solid var(--border2);
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--t1);
+    background: #fff;
+    transition: border-color .2s, box-shadow .2s;
+    appearance: none;
+  }
+  .form-input:focus, .form-select:focus {
+    outline: none;
+    border-color: var(--v);
+    box-shadow: 0 0 0 3px rgba(27,122,78,.1);
+  }
+  .form-input.error { border-color: var(--r); box-shadow: 0 0 0 3px rgba(192,57,43,.1); }
+  .select-wrap { position: relative; }
+  .select-wrap::after {
+    content: '▾'; position: absolute; right: 14px; top: 50%;
+    transform: translateY(-50%); pointer-events: none;
+    color: var(--t3); font-size: 14px;
+  }
+
+  /* ── BUTTONS ── */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 12px 24px; border: none; border-radius: 10px;
+    font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600;
+    cursor: pointer; transition: all .2s; text-decoration: none;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--a), var(--v));
+    color: #fff; width: 100%;
+    box-shadow: 0 4px 14px rgba(26,58,107,.25);
+  }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(26,58,107,.32); }
+  .btn-primary:disabled { opacity: .45; cursor: not-allowed; transform: none; }
+  .btn-next {
+    background: var(--v); color: #fff; width: 100%; margin-top: .75rem;
+    box-shadow: 0 4px 14px rgba(27,122,78,.25);
+    display: none;
+  }
+  .btn-next.show { display: inline-flex; animation: pageIn .3s ease; }
+  .btn-next:hover { background: var(--vc); transform: translateY(-1px); }
+  .btn-sm {
+    padding: 7px 14px; font-size: 12px; border-radius: 8px;
+    background: #fff; border: 1px solid var(--border2); color: var(--t2);
+  }
+  .btn-sm:hover { border-color: var(--a); color: var(--a); }
+  .btn-danger { background: var(--rs); border-color: rgba(192,57,43,.3); color: var(--r); }
+  .btn-danger:hover { background: #fbd5d0; }
+
+  /* ── DEADLINE BANNER ── */
+  .deadline-banner {
+    display: none;
+    align-items: center; gap: 8px;
+    padding: 10px 14px;
+    background: var(--ds); border: 1px solid rgba(200,153,58,.3);
+    border-radius: 10px; font-size: 13px; color: #7a5a1a;
+    margin-bottom: 1rem;
+  }
+  .deadline-banner.show { display: flex; }
+
+  /* ── QUESTION CARD ── */
+  .q-module {
+    font-size: 10.5px; font-weight: 700; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--v); margin-bottom: 5px;
+  }
+  .q-type {
+    font-size: 11px; color: var(--t3); margin-bottom: 12px;
+    display: flex; align-items: center; gap: 5px;
+  }
+  .q-type::before { content: ''; display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: var(--t3); }
+  .q-text {
+    font-family: 'DM Serif Display', serif;
+    font-size: 18px; color: var(--t1); line-height: 1.45;
+    margin-bottom: 1.25rem;
+  }
+
+  /* ── OPTIONS ── */
+  .opts { display: flex; flex-direction: column; gap: 8px; }
+  .opt {
+    display: flex; align-items: center; gap: 12px;
+    padding: 11px 14px;
+    border: 1.5px solid var(--border2);
+    border-radius: 10px; background: var(--bg);
+    font-size: 13.5px; color: var(--t1);
+    cursor: pointer; transition: all .18s; text-align: left;
+    font-family: 'DM Sans', sans-serif; width: 100%;
+  }
+  .opt:hover:not(:disabled) { border-color: var(--v); background: var(--vs); transform: translateX(3px); }
+  .opt-letter {
+    width: 24px; height: 24px; border-radius: 50%;
+    border: 1.5px solid var(--border2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; color: var(--t3); flex-shrink: 0;
+    transition: all .18s;
+  }
+  .opt.correct { border-color: var(--v); background: var(--vs); }
+  .opt.correct .opt-letter { background: var(--v); border-color: var(--v); color: #fff; }
+  .opt.wrong { border-color: var(--r); background: var(--rs); }
+  .opt.wrong .opt-letter { background: var(--r); border-color: var(--r); color: #fff; }
+  .opt:disabled { cursor: default; }
+
+  /* ── TRUE/FALSE ── */
+  .tf-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .tf-btn {
+    padding: 1.2rem 1rem; border: 1.5px solid var(--border2);
+    border-radius: 12px; background: var(--bg);
+    font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600;
+    cursor: pointer; text-align: center; transition: all .18s;
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+  }
+  .tf-btn .tf-ico { font-size: 26px; }
+  .tf-btn:hover:not(:disabled) { border-color: var(--v); background: var(--vs); transform: translateY(-2px); }
+  .tf-btn.correct { border-color: var(--v); background: var(--vs); color: var(--vb); }
+  .tf-btn.wrong { border-color: var(--r); background: var(--rs); color: var(--r); }
+  .tf-btn:disabled { cursor: default; }
+
+  /* ── FILL ── */
+  .fill-group { display: flex; gap: 8px; }
+  .fill-group input { flex: 1; }
+  .fill-group .btn { padding: 11px 18px; background: var(--a); color: #fff; border-radius: 10px; font-size: 13px; }
+  .fill-group .btn:hover { background: var(--ac); }
+
+  /* ── FEEDBACK ── */
+  .feedback {
+    margin-top: 12px; padding: 12px 16px;
+    border-radius: 10px; font-size: 13px; line-height: 1.55;
+    display: none; animation: pageIn .3s ease;
+  }
+  .feedback.show { display: block; }
+  .feedback.ok { background: var(--vs); border: 1px solid rgba(27,122,78,.25); color: var(--vb); }
+  .feedback.err { background: var(--rs); border: 1px solid rgba(192,57,43,.2); color: #7a1a1a; }
+  .feedback-title { font-weight: 700; margin-bottom: 3px; font-size: 13.5px; }
+
+  /* ── SCORE / STATS ── */
+  .score-hero { text-align: center; padding: 1.5rem 0; }
+  .score-trophy { font-size: 52px; margin-bottom: .5rem; }
+  .level-badge {
+    display: inline-block; padding: 5px 18px; border-radius: 20px;
+    font-size: 12.5px; font-weight: 600; margin-bottom: .75rem;
+  }
+  .level-basico { background: var(--ds); color: #7a5a1a; border: 1px solid rgba(200,153,58,.3); }
+  .level-desarrollo { background: var(--as); color: var(--a); border: 1px solid rgba(26,58,107,.2); }
+  .level-certificado { background: var(--vs); color: var(--vb); border: 1px solid rgba(27,122,78,.2); }
+  .score-name { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--a); margin-bottom: 3px; }
+  .score-area { font-size: 13px; color: var(--t2); margin-bottom: 1.25rem; }
+  .stats-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 1.25rem; }
+  .stat { background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; text-align: center; }
+  .stat-val { font-size: 22px; font-weight: 700; color: var(--t1); }
+  .stat-lbl { font-size: 11px; color: var(--t3); margin-top: 2px; font-weight: 500; }
+  .score-msg { font-size: 14px; color: var(--t2); font-style: italic; line-height: 1.6; text-align: center; margin-bottom: 1rem; }
+  .score-note {
+    font-size: 12px; color: var(--t3); text-align: center;
+    padding: 10px 14px; background: var(--bg); border-radius: 10px;
+    border: 1px solid var(--border); line-height: 1.5;
+  }
+
+  /* ── ADMIN ── */
+  .admin-header { margin-bottom: 1.25rem; }
+  .admin-title { font-family: 'DM Serif Display', serif; font-size: 24px; color: var(--a); margin-bottom: 3px; }
+  .admin-sub { font-size: 13px; color: var(--t2); }
+  .admin-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1.25rem; }
+
+  .tabs { display: flex; gap: 4px; margin-bottom: 1.25rem; border-bottom: 1px solid var(--border); padding-bottom: 1px; }
+  .tab {
+    padding: 8px 16px; font-size: 13px; font-weight: 500;
+    color: var(--t2); border: none; background: none; cursor: pointer;
+    border-bottom: 2px solid transparent; transition: all .18s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .tab.active { color: var(--a); border-bottom-color: var(--a); font-weight: 600; }
+  .tab:hover:not(.active) { color: var(--t1); }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  .kpi-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 8px; margin-bottom: 1.25rem; }
+  .kpi { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; text-align: center; }
+  .kpi-val { font-size: 28px; font-weight: 700; color: var(--t1); }
+  .kpi-lbl { font-size: 11.5px; color: var(--t3); margin-top: 3px; font-weight: 500; }
+
+  .bar-section { margin-bottom: 1.25rem; }
+  .bar-title { font-size: 12px; font-weight: 600; color: var(--t2); text-transform: uppercase; letter-spacing: .8px; margin-bottom: 10px; }
+  .bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 7px; }
+  .bar-label { font-size: 12px; color: var(--t2); width: 100px; flex-shrink: 0; text-align: right; }
+  .bar-track { flex: 1; height: 14px; background: var(--bg); border-radius: 4px; overflow: hidden; border: 1px solid var(--border); }
+  .bar-fill { height: 100%; background: var(--v); border-radius: 4px; transition: width .6s ease; }
+  .bar-fill.azul { background: var(--ac); }
+  .bar-fill.dorado { background: var(--d); }
+  .bar-count { font-size: 12px; color: var(--t2); width: 24px; text-align: right; }
+
+  .tbl-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 12px; }
+  table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  th { background: var(--bg); padding: 9px 12px; text-align: left; font-weight: 600; color: var(--t2); border-bottom: 1px solid var(--border); white-space: nowrap; }
+  td { padding: 9px 12px; border-bottom: 1px solid var(--border); color: var(--t1); }
+  tr:last-child td { border-bottom: none; }
+  .badge { display: inline-block; padding: 2px 9px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+  .badge-cert { background: var(--vs); color: var(--vb); }
+  .badge-dev { background: var(--as); color: var(--a); }
+  .badge-bas { background: var(--ds); color: #7a5a1a; }
+
+  .cfg-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem; }
+  .cfg-title { font-size: 14px; font-weight: 600; color: var(--t1); margin-bottom: 1rem; }
+  .cfg-danger { border-color: rgba(192,57,43,.25); }
+  .cfg-danger .cfg-title { color: var(--r); }
+
+  .pass-card {
+    max-width: 360px; margin: 3rem auto;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 20px; padding: 2rem;
+    box-shadow: var(--shadow-lg);
+  }
+  .pass-title { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--a); margin-bottom: 6px; }
+  .pass-sub { font-size: 13px; color: var(--t2); margin-bottom: 1.25rem; }
+
+  .notice { font-size: 12px; color: var(--t2); line-height: 1.55; padding: 10px 14px; background: var(--bg); border-radius: 10px; border: 1px solid var(--border); margin-top: .75rem; }
+
+  .expired-wrap { text-align: center; padding: 4rem 1.5rem; }
+  .expired-icon { font-size: 52px; margin-bottom: 1rem; }
+
+  .combo-toast {
+    position: fixed; top: 70px; right: 16px;
+    background: var(--v); color: #fff;
+    padding: 9px 16px; border-radius: 10px;
+    font-size: 13px; font-weight: 600;
+    box-shadow: var(--shadow-lg);
+    transform: translateX(120%); transition: transform .3s cubic-bezier(.34,1.56,.64,1);
+    z-index: 200;
+  }
+  .combo-toast.show { transform: translateX(0); }
+
+  .saving-indicator {
+    position: fixed; bottom: 20px; right: 16px;
+    background: var(--a); color: #fff;
+    padding: 8px 16px; border-radius: 10px;
+    font-size: 12.5px; font-weight: 500;
+    box-shadow: var(--shadow);
+    display: none; z-index: 200;
+  }
+  .saving-indicator.show { display: block; animation: pageIn .3s ease; }
+
+  .nav-foot { display: flex; justify-content: center; gap: 10px; padding: 1rem; border-top: 1px solid var(--border); background: #fff; }
+
+  @media (max-width: 480px) {
+    .stats-grid { grid-template-columns: repeat(3,1fr); }
+    .kpi-grid { grid-template-columns: 1fr 1fr; }
+    .tf-row { grid-template-columns: 1fr 1fr; }
+    .shell { padding: 1.5rem 1rem 3rem; }
+    .q-text { font-size: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="combo-toast" id="comboToast">🔥 +5 pts extra</div>
+<div class="saving-indicator" id="savingInd">Guardando resultados...</div>
+
+<!-- PAGE: EXPIRED -->
+<div class="page" id="pgExpired">
+  <div class="shell expired-wrap">
+    <div class="expired-icon">🔒</div>
+    <h2 style="font-family:'DM Serif Display',serif;font-size:26px;color:var(--a);margin-bottom:.5rem">Evaluación cerrada</h2>
+    <p style="font-size:14px;color:var(--t2);line-height:1.6">El plazo para completar esta evaluación ya venció.<br>Comunícate con el área de Procesos y Calidad para más información.</p>
+  </div>
+</div>
+
+<!-- PAGE: REGISTER -->
+<div class="page active" id="pgRegister">
+  <div class="topbar">
+    <div class="topbar-brand">
+      <div class="topbar-dot"></div>
+      <span class="topbar-name">Área de Procesos y Calidad — CACPE PASTAZA</span>
+    </div>
+    <span class="topbar-tag">Piloto</span>
+  </div>
+  <div class="shell">
+    <div class="cover-hero">
+      <div class="cover-badge">📋 Evaluación de conocimientos</div>
+      <h1 class="cover-title">Gestión de Procesos<br>Institucionales</h1>
+      <p class="cover-sub">Antes de comenzar, ingresa tus datos. Tus respuestas quedan registradas automáticamente.</p>
+      <div class="cover-pills">
+        <div class="pill">⏱ 5 preguntas</div>
+        <div class="pill">🎯 Feedback inmediato</div>
+        <div class="pill">📊 Resultados automáticos</div>
+      </div>
+    </div>
+
+    <div id="deadlineBanner" class="deadline-banner">
+      <span>⏰</span><span id="deadlineText"></span>
+    </div>
+
+    <div class="card">
+      <div class="form-row">
+        <label class="form-label">Nombre completo <span>*</span></label>
+        <input class="form-input" id="regNombre" type="text" placeholder="Ej. María Pérez" autocomplete="off">
+      </div>
+      <div class="form-row">
+        <label class="form-label">Número de cédula <span>*</span></label>
+        <input class="form-input" id="regCedula" type="text" placeholder="Ej. 1600123456" autocomplete="off" maxlength="13">
+      </div>
+      <div class="form-row" style="margin-bottom:0">
+        <label class="form-label">Agencia / Área <span>*</span></label>
+        <div class="select-wrap">
+          <select class="form-select" id="regArea">
+            <option value="">— Selecciona tu agencia o área —</option>
+            <optgroup label="Agencias">
+              <option>MATRIZ</option>
+              <option>MARISCAL</option>
+              <option>OBRERO</option>
+              <option>TERMINAL</option>
+              <option>SHELL</option>
+              <option>ARAJUNO</option>
+              <option>HUACHI</option>
+              <option>AMBATO</option>
+              <option>QUITO</option>
+              <option>CUENCA</option>
+              <option>LOJA</option>
+              <option>TENA</option>
+              <option>CHACO</option>
+              <option>COCA</option>
+              <option>MACAS</option>
+              <option>SUCUA</option>
+            </optgroup>
+            <optgroup label="Áreas administrativas">
+              <option>Crédito</option>
+              <option>Captaciones</option>
+              <option>Atención al socio</option>
+              <option>Contabilidad</option>
+              <option>Tecnología</option>
+              <option>Talento Humano</option>
+              <option>Riesgos</option>
+              <option>Cumplimiento</option>
+              <option>Gerencia</option>
+              <option>Procesos y Calidad</option>
+            </optgroup>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" onclick="startEval()">Comenzar evaluación →</button>
+    <div class="notice">Una vez que inicies la evaluación no podrás retroceder. Solo puedes completarla una vez. Asegúrate de que tus datos sean correctos.</div>
+  </div>
+  <div class="nav-foot">
+    <button class="btn btn-sm" onclick="showPage('pgAdminLogin')">Panel administrador</button>
+  </div>
+</div>
+
+<!-- PAGE: QUESTION -->
+<div class="page" id="pgQuestion">
+  <div class="topbar">
+    <div class="topbar-brand">
+      <div class="topbar-dot"></div>
+      <span class="topbar-name" id="qPersonName">—</span>
+    </div>
+    <span class="topbar-tag" id="qPtsTag">0 pts</span>
+  </div>
+  <div class="prog-wrap">
+    <div class="prog-meta">
+      <span id="progLabel">Pregunta 1 de 5</span>
+      <span id="progPct">0%</span>
+    </div>
+    <div class="prog-track"><div class="prog-bar" id="progBar" style="width:0%"></div></div>
+  </div>
+  <div class="shell" style="padding-top:1.5rem">
+    <div class="card" id="qCard">
+      <div class="q-module" id="qModule"></div>
+      <div class="q-type" id="qType"></div>
+      <div class="q-text" id="qText"></div>
+      <div id="qBody"></div>
+      <div class="feedback" id="feedbackBox">
+        <div class="feedback-title" id="fbTitle"></div>
+        <div id="fbBody"></div>
+      </div>
+    </div>
+    <button class="btn btn-next" id="btnNext" onclick="nextQ()">Siguiente →</button>
+  </div>
+</div>
+
+<!-- PAGE: RESULT -->
+<div class="page" id="pgResult">
+  <div class="topbar">
+    <div class="topbar-brand">
+      <div class="topbar-dot"></div>
+      <span class="topbar-name">Resultado — Evaluación de Procesos</span>
+    </div>
+    <span class="topbar-tag" id="resLevelTag">—</span>
+  </div>
+  <div class="shell">
+    <div class="score-hero">
+      <div class="score-trophy" id="resTrophy"></div>
+      <div id="resLevelBadge" class="level-badge"></div>
+      <div class="score-name" id="resName">—</div>
+      <div class="score-area" id="resAreaLine">—</div>
+    </div>
+    <div class="stats-grid">
+      <div class="stat"><div class="stat-val" id="resCorrectas">—</div><div class="stat-lbl">Correctas</div></div>
+      <div class="stat"><div class="stat-val" id="resPct">—</div><div class="stat-lbl">Porcentaje</div></div>
+      <div class="stat"><div class="stat-val" id="resPts">—</div><div class="stat-lbl">Puntos</div></div>
+    </div>
+    <p class="score-msg" id="resMsg"></p>
+    <div class="score-note">Tus resultados han sido registrados automáticamente. El área de Procesos y Calidad revisará los resultados y coordinará acciones de retroalimentación de ser necesario.</div>
+  </div>
+</div>
+
+<!-- PAGE: ADMIN LOGIN -->
+<div class="page" id="pgAdminLogin">
+  <div class="topbar">
+    <div class="topbar-brand">
+      <div class="topbar-dot"></div>
+      <span class="topbar-name">Panel de administrador</span>
+    </div>
+  </div>
+  <div class="shell">
+    <div class="pass-card">
+      <div class="pass-title">Acceso restringido</div>
+      <p class="pass-sub">Ingresa la contraseña para acceder al panel de administración.</p>
+      <div class="form-row">
+        <label class="form-label">Contraseña</label>
+        <input class="form-input" type="password" id="adminPass" placeholder="••••••" onkeydown="if(event.key==='Enter')checkAdmin()">
+      </div>
+      <button class="btn btn-primary" onclick="checkAdmin()">Ingresar →</button>
+      <div id="adminErr" style="font-size:12px;color:var(--r);margin-top:8px;display:none">Contraseña incorrecta.</div>
+    </div>
+  </div>
+  <div class="nav-foot">
+    <button class="btn btn-sm" onclick="showPage('pgRegister')">← Volver a la evaluación</button>
+  </div>
+</div>
+
+<!-- PAGE: ADMIN DASHBOARD -->
+<div class="page" id="pgAdmin">
+  <div class="topbar">
+    <div class="topbar-brand">
+      <div class="topbar-dot"></div>
+      <span class="topbar-name">Panel de administrador — CACPE PASTAZA</span>
+    </div>
+    <span class="topbar-tag" id="adminLastUpdate">—</span>
+  </div>
+  <div class="shell" style="padding-top:1.5rem">
+    <div class="admin-header">
+      <div class="admin-title">Resultados de la evaluación</div>
+      <div class="admin-sub">Gestión de Procesos Institucionales — Piloto</div>
+    </div>
+    <div class="admin-actions">
+      <button class="btn btn-sm" onclick="loadAdmin()">↻ Actualizar</button>
+      <button class="btn btn-sm" onclick="exportCSV()">↓ Exportar CSV</button>
+      <button class="btn btn-sm" onclick="switchTab('tabConfig')">⚙ Configurar</button>
+      <button class="btn btn-sm" onclick="showPage('pgAdminLogin')">Salir</button>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" id="tabResumen-btn" onclick="switchTab('tabResumen')">Resumen</button>
+      <button class="tab" id="tabParticipantes-btn" onclick="switchTab('tabParticipantes')">Participantes</button>
+      <button class="tab" id="tabConfig-btn" onclick="switchTab('tabConfig')">Configuración</button>
+    </div>
+
+    <!-- TAB: RESUMEN -->
+    <div class="tab-panel active" id="tabResumen">
+      <div class="kpi-grid" id="kpiGrid"></div>
+      <div class="bar-section" id="areaChart"></div>
+      <div class="bar-section" id="levelChart"></div>
+    </div>
+
+    <!-- TAB: PARTICIPANTES -->
+    <div class="tab-panel" id="tabParticipantes">
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Nombre</th><th>Cédula</th><th>Agencia/Área</th>
+              <th>Correc.</th><th>%</th><th>Nivel</th><th>Fecha</th>
+            </tr>
+          </thead>
+          <tbody id="adminTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TAB: CONFIGURACIÓN -->
+    <div class="tab-panel" id="tabConfig">
+      <div class="cfg-card">
+        <div class="cfg-title">⚙ Parámetros de la evaluación</div>
+        <div class="form-row">
+          <label class="form-label">Fecha y hora límite</label>
+          <input class="form-input" type="datetime-local" id="cfgDeadline">
+        </div>
+        <div class="form-row">
+          <label class="form-label">Calificación mínima para aprobar (%)</label>
+          <input class="form-input" type="number" id="cfgMinScore" min="1" max="100" value="60">
+        </div>
+        <div class="form-row" style="margin-bottom:0">
+          <label class="form-label">Contraseña del administrador</label>
+          <input class="form-input" type="text" id="cfgPass" value="cacpe2025">
+        </div>
+        <button class="btn btn-primary" style="margin-top:1rem" onclick="saveConfig()">Guardar configuración</button>
+        <div id="cfgMsg" style="font-size:12px;color:var(--v);margin-top:8px;display:none">✓ Configuración guardada.</div>
+      </div>
+      <div class="cfg-card cfg-danger">
+        <div class="cfg-title">⚠ Zona de precaución</div>
+        <p style="font-size:13px;color:var(--t2);margin-bottom:1rem;line-height:1.55">Elimina todos los registros de participantes de Airtable. Esta acción no se puede deshacer.</p>
+        <button class="btn btn-sm btn-danger" onclick="confirmClear()">Eliminar todos los resultados</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════
+// CONFIGURACIÓN — AIRTABLE
+// ════════════════════════════════════════
+const AT_TOKEN = "patyibS6jRn9NsRUZ.69759a1df760e97382f524a0da91bed922789fcd2b7eff873f9fc86e506922d3";
+const AT_BASE  = "appE7P33pfvpyMiiA";
+const AT_TABLE = "Resultados";
+const AT_URL   = `https://api.airtable.com/v0/${AT_BASE}/${AT_TABLE}`;
+const AT_HEADS = { "Authorization": `Bearer ${AT_TOKEN}`, "Content-Type": "application/json" };
+
+// ════════════════════════════════════════
+// CONFIG LOCAL
+// ════════════════════════════════════════
+let CFG = { deadline: null, minScore: 60, pass: "cacpe2025" };
+function loadCFG() { try { const s = localStorage.getItem("cacpe_cfg"); if (s) CFG = { ...CFG, ...JSON.parse(s) }; } catch(e){} }
+function saveCFG() { try { localStorage.setItem("cacpe_cfg", JSON.stringify(CFG)); } catch(e){} }
+
+// ════════════════════════════════════════
+// PREGUNTAS
+// ════════════════════════════════════════
+const PREGUNTAS = [
+  {
+    mod: "Módulo 1 — Conceptos base",
+    tipo: "opcion", typeLabel: "Selección múltiple",
+    texto: "¿Cuál es la definición correcta de proceso según el Manual de Gestión de CACPE PASTAZA?",
+    opts: [
+      "Un conjunto de reglas escritas para guiar al personal.",
+      "El conjunto de actividades estandarizadas que transforman insumos en productos o servicios.",
+      "Un documento aprobado por el Consejo de Administración.",
+      "Una instrucción específica de cómo realizar una tarea."
+    ],
+    correcta: 1,
+    fb: "Un proceso transforma entradas (insumos) en salidas (productos o servicios) a través de actividades estandarizadas. Esta es la definición base del Manual de Gestión de Procesos de CACPE PASTAZA."
+  },
+  {
+    mod: "Módulo 1 — Cumplimiento",
+    tipo: "vf", typeLabel: "Verdadero / Falso",
+    texto: "Las disposiciones del Manual de Gestión de Procesos son de cumplimiento voluntario para el personal de CACPE PASTAZA.",
+    correcta: false,
+    fb: "Falso. Las disposiciones son de cumplimiento OBLIGATORIO para todo el personal de la Cooperativa, sin excepción, según lo establece expresamente el manual."
+  },
+  {
+    mod: "Módulo 2 — Ficha de Caracterización",
+    tipo: "opcion", typeLabel: "Selección múltiple",
+    texto: "¿Qué campo de la Ficha de Caracterización indica la primera y última actividad de un proceso?",
+    opts: ["Alcance", "Objetivo", "Límite", "Responsable"],
+    correcta: 2,
+    fb: "El campo 'Límite' señala el margen de ejecución del proceso: cuál es la primera y la última actividad que lo componen."
+  },
+  {
+    mod: "Módulo 2 — Completar",
+    tipo: "completar", typeLabel: "Completar el espacio",
+    texto: "Para difundir un proceso crítico actualizado, el responsable debe realizar una inducción con registro de ____________.",
+    answer: "asistencia",
+    alts: ["asistencias", "asistencia."],
+    fb: "Para procesos críticos la difusión debe hacerse con registro de ASISTENCIA (presencial o electrónico), garantizando evidencia de que todos los involucrados fueron informados."
+  },
+  {
+    mod: "Módulo 3 — Indicadores",
+    tipo: "vf", typeLabel: "Verdadero / Falso",
+    texto: "Un indicador de eficiencia mide si el proceso usa bien los recursos (ej. tiempo de ciclo), mientras que un indicador de eficacia mide si se está logrando el objetivo propuesto.",
+    correcta: true,
+    fb: "Correcto. Eficacia = ¿llegamos a la meta? Eficiencia = ¿usamos bien los recursos para llegar? Los dos tipos son necesarios para una gestión completa del proceso."
+  }
+];
+
+// ════════════════════════════════════════
+// ESTADO
+// ════════════════════════════════════════
+let currentQ = 0, pts = 0, racha = 0, correctas = 0;
+let participant = {}, answered = [];
+
+// ════════════════════════════════════════
+// INICIALIZACIÓN
+// ════════════════════════════════════════
+loadCFG();
+if (CFG.deadline && new Date() > new Date(CFG.deadline)) {
+  showPage("pgExpired");
+} else {
+  if (CFG.deadline) {
+    const dl = new Date(CFG.deadline);
+    document.getElementById("deadlineBanner").classList.add("show");
+    document.getElementById("deadlineText").textContent =
+      "Fecha límite: " + dl.toLocaleDateString("es-EC", { day:"2-digit", month:"long", year:"numeric", hour:"2-digit", minute:"2-digit" });
+  }
+}
+
+// ════════════════════════════════════════
+// NAVEGACIÓN
+// ════════════════════════════════════════
+function showPage(id) {
+  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  window.scrollTo(0, 0);
+}
+
+// ════════════════════════════════════════
+// EVALUACIÓN
+// ════════════════════════════════════════
+function startEval() {
+  const n = document.getElementById("regNombre").value.trim();
+  const c = document.getElementById("regCedula").value.trim();
+  const a = document.getElementById("regArea").value;
+  if (!n) { alert("Por favor ingresa tu nombre completo."); return; }
+  if (!c || !/^\d{7,13}$/.test(c)) { alert("Ingresa un número de cédula válido (solo dígitos, 7-13 caracteres)."); return; }
+  if (!a) { alert("Por favor selecciona tu agencia o área."); return; }
+  if (CFG.deadline && new Date() > new Date(CFG.deadline)) { showPage("pgExpired"); return; }
+  participant = { nombre: n, cedula: c, area: a };
+  currentQ = 0; pts = 0; racha = 0; correctas = 0; answered = [];
+  renderQ();
+  showPage("pgQuestion");
+}
+
+function renderQ() {
+  if (currentQ >= PREGUNTAS.length) { finishEval(); return; }
+  const q = PREGUNTAS[currentQ];
+  const pct = Math.round(currentQ / PREGUNTAS.length * 100);
+  document.getElementById("qPersonName").textContent = participant.nombre;
+  document.getElementById("qPtsTag").textContent = pts + " pts";
+  document.getElementById("progBar").style.width = pct + "%";
+  document.getElementById("progLabel").textContent = `Pregunta ${currentQ + 1} de ${PREGUNTAS.length}`;
+  document.getElementById("progPct").textContent = pct + "%";
+  document.getElementById("qModule").textContent = q.mod;
+  document.getElementById("qType").textContent = q.typeLabel;
+  document.getElementById("qText").textContent = q.texto;
+  document.getElementById("feedbackBox").className = "feedback";
+  document.getElementById("btnNext").className = "btn btn-next";
+  const body = document.getElementById("qBody");
+  body.innerHTML = "";
+
+  if (q.tipo === "opcion") {
+    const d = document.createElement("div"); d.className = "opts";
+    const letters = ["A","B","C","D"];
+    q.opts.forEach((o, i) => {
+      const b = document.createElement("button"); b.className = "opt";
+      b.innerHTML = `<span class="opt-letter">${letters[i]}</span>${o}`;
+      b.onclick = () => answerOpcion(i);
+      d.appendChild(b);
+    });
+    body.appendChild(d);
+  } else if (q.tipo === "vf") {
+    const d = document.createElement("div"); d.className = "tf-row";
+    [["✅","Verdadero",true],["❌","Falso",false]].forEach(([ico,lbl,val]) => {
+      const b = document.createElement("button"); b.className = "tf-btn";
+      b.innerHTML = `<span class="tf-ico">${ico}</span>${lbl}`;
+      b.onclick = () => answerVF(val);
+      d.appendChild(b);
+    });
+    body.appendChild(d);
+  } else if (q.tipo === "completar") {
+    const g = document.createElement("div"); g.className = "fill-group";
+    const inp = document.createElement("input");
+    inp.className = "form-input"; inp.type = "text";
+    inp.placeholder = "Escribe tu respuesta..."; inp.id = "fillInp";
+    inp.autocomplete = "off";
+    inp.onkeydown = e => { if (e.key === "Enter") answerFill(); };
+    const btn = document.createElement("button");
+    btn.className = "btn"; btn.textContent = "Confirmar";
+    btn.onclick = answerFill;
+    g.appendChild(inp); g.appendChild(btn);
+    body.appendChild(g);
+    setTimeout(() => { const i = document.getElementById("fillInp"); if(i) i.focus(); }, 100);
+  }
+}
+
+function showFeedback(ok, q) {
+  const box = document.getElementById("feedbackBox");
+  box.className = "feedback show " + (ok ? "ok" : "err");
+  document.getElementById("fbTitle").textContent = ok ? "✓ Correcto" : "✗ Incorrecto";
+  document.getElementById("fbBody").textContent = q.fb;
+  document.getElementById("btnNext").className = "btn btn-next show";
+  if (ok) {
+    pts += 10; racha++; correctas++;
+    if (racha >= 2) { pts += 5; showCombo(); }
+  } else { racha = 0; }
+  answered.push(ok);
+  document.getElementById("qPtsTag").textContent = pts + " pts";
+}
+
+function answerOpcion(idx) {
+  const q = PREGUNTAS[currentQ];
+  document.querySelectorAll(".opt").forEach(b => b.disabled = true);
+  document.querySelectorAll(".opt").forEach((b, i) => {
+    if (i === idx) b.classList.add(idx === q.correcta ? "correct" : "wrong");
+    if (i === q.correcta && idx !== q.correcta) b.classList.add("correct");
+  });
+  showFeedback(idx === q.correcta, q);
+}
+
+function answerVF(val) {
+  const q = PREGUNTAS[currentQ];
+  document.querySelectorAll(".tf-btn").forEach(b => b.disabled = true);
+  const btns = document.querySelectorAll(".tf-btn");
+  const ok = val === q.correcta;
+  btns[0].classList.add(val === true ? (q.correcta === true ? "correct" : "wrong") : "");
+  btns[1].classList.add(val === false ? (q.correcta === false ? "correct" : "wrong") : "");
+  if (!ok) { (q.correcta === true ? btns[0] : btns[1]).classList.add("correct"); }
+  showFeedback(ok, q);
+}
+
+function answerFill() {
+  const q = PREGUNTAS[currentQ];
+  const inp = document.getElementById("fillInp"); if (!inp) return;
+  const val = inp.value.trim().toLowerCase();
+  const ok = val === q.answer || (q.alts && q.alts.some(a => val === a.toLowerCase()));
+  inp.disabled = true;
+  inp.closest(".fill-group").querySelector(".btn").disabled = true;
+  inp.className = "form-input " + (ok ? "" : "error");
+  if (!ok) inp.value = `"${inp.value}" — Correcta: ${q.answer}`;
+  showFeedback(ok, q);
+}
+
+function nextQ() { currentQ++; renderQ(); }
+
+function showCombo() {
+  const t = document.getElementById("comboToast");
+  t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 1800);
+}
+
+// ════════════════════════════════════════
+// FINALIZAR Y GUARDAR EN AIRTABLE
+// ════════════════════════════════════════
+async function finishEval() {
+  const total = PREGUNTAS.length;
+  const pct = Math.round(correctas / total * 100);
+  let nivel, trofeo, msg;
+  if (pct < CFG.minScore) {
+    nivel = "Básico"; trofeo = "📚";
+    msg = "Te recomendamos repasar los módulos de capacitación. El área de Procesos y Calidad coordinará una sesión de refuerzo contigo.";
+  } else if (pct < 80) {
+    nivel = "En desarrollo"; trofeo = "🌱";
+    msg = "¡Buen resultado! Tienes una comprensión sólida de los conceptos base. Revisa los temas donde tuviste mayor dificultad.";
+  } else {
+    nivel = "Proceso certificado"; trofeo = "🏆";
+    msg = "Excelente. Demuestras un dominio destacado de la gestión de procesos en CACPE PASTAZA. ¡Sigue siendo un referente!";
+  }
+
+  // Mostrar resultado primero
+  const lc = nivel === "Proceso certificado" ? "level-certificado" : nivel === "En desarrollo" ? "level-desarrollo" : "level-basico";
+  document.getElementById("resTrophy").textContent = trofeo;
+  document.getElementById("resLevelBadge").className = "level-badge " + lc;
+  document.getElementById("resLevelBadge").textContent = nivel;
+  document.getElementById("resLevelTag").textContent = nivel;
+  document.getElementById("resName").textContent = participant.nombre;
+  document.getElementById("resAreaLine").textContent = participant.area + " · Cédula: " + participant.cedula;
+  document.getElementById("resCorrectas").textContent = correctas + "/" + total;
+  document.getElementById("resPct").textContent = pct + "%";
+  document.getElementById("resPts").textContent = pts;
+  document.getElementById("resMsg").textContent = msg;
+  showPage("pgResult");
+
+  // Guardar en Airtable
+  const ind = document.getElementById("savingInd");
+  ind.classList.add("show");
+  const record = {
+    fields: {
+      nombre: participant.nombre,
+      cedula: participant.cedula,
+      area: participant.area,
+      correctas: correctas,
+      total: total,
+      porcentaje: pct,
+      puntos: pts,
+      nivel: nivel,
+      fecha: new Date().toLocaleString("es-EC", { timeZone: "America/Guayaquil" }),
+      detalle: answered.map((r, i) => `P${i+1}: ${r ? "✓" : "✗"}`).join(" | ")
+    }
+  };
+  try {
+    const res = await fetch(AT_URL, {
+      method: "POST",
+      headers: AT_HEADS,
+      body: JSON.stringify({ records: [record] })
+    });
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    ind.textContent = "✓ Resultados guardados";
+    setTimeout(() => { ind.classList.remove("show"); ind.textContent = "Guardando resultados..."; }, 2500);
+  } catch(e) {
+    ind.textContent = "⚠ Error al guardar. Verifica la conexión.";
+    setTimeout(() => ind.classList.remove("show"), 3000);
+    console.error("Airtable error:", e);
+  }
+}
+
+// ════════════════════════════════════════
+// ADMIN
+// ════════════════════════════════════════
+function checkAdmin() {
+  const p = document.getElementById("adminPass").value;
+  if (p === CFG.pass) {
+    document.getElementById("adminPass").value = "";
+    document.getElementById("adminErr").style.display = "none";
+    loadAdmin();
+    showPage("pgAdmin");
+  } else {
+    document.getElementById("adminErr").style.display = "block";
+  }
+}
+
+async function loadAdmin() {
+  document.getElementById("adminLastUpdate").textContent = "Actualizando...";
+  try {
+    const res = await fetch(AT_URL + "?maxRecords=200&sort%5B0%5D%5Bfield%5D=fecha&sort%5B0%5D%5Bdirection%5D=desc", { headers: AT_HEADS });
+    const data = await res.json();
+    const records = (data.records || []).map(r => r.fields);
+    renderKPIs(records);
+    renderTable(records);
+    renderCharts(records);
+    document.getElementById("adminLastUpdate").textContent = "Actualizado " + new Date().toLocaleTimeString("es-EC");
+  } catch(e) {
+    document.getElementById("adminLastUpdate").textContent = "Error al cargar";
+    console.error(e);
+  }
+}
+
+function renderKPIs(records) {
+  const total = records.length;
+  const aprobados = records.filter(r => r.nivel !== "Básico").length;
+  const reprobados = total - aprobados;
+  const avg = total > 0 ? Math.round(records.reduce((s,r) => s + (r.porcentaje||0), 0) / total) : 0;
+  document.getElementById("kpiGrid").innerHTML = [
+    [total, "Participantes"],
+    [aprobados, "Aprobaron"],
+    [reprobados, "Por reforzar"],
+    [avg + "%", "Promedio"]
+  ].map(([v, l]) => `<div class="kpi"><div class="kpi-val">${v}</div><div class="kpi-lbl">${l}</div></div>`).join("");
+}
+
+function renderTable(records) {
+  const tb = document.getElementById("adminTableBody");
+  if (!records.length) {
+    tb.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--t3);padding:1.5rem">Sin registros aún.</td></tr>';
+    return;
+  }
+  tb.innerHTML = records.map(r => {
+    const lc = r.nivel === "Proceso certificado" ? "badge-cert" : r.nivel === "En desarrollo" ? "badge-dev" : "badge-bas";
+    return `<tr>
+      <td>${r.nombre||''}</td>
+      <td>${r.cedula||''}</td>
+      <td>${r.area||''}</td>
+      <td style="text-align:center">${r.correctas||0}/${r.total||5}</td>
+      <td style="text-align:center">${r.porcentaje||0}%</td>
+      <td><span class="badge ${lc}">${r.nivel||''}</span></td>
+      <td style="font-size:11px;white-space:nowrap">${r.fecha||''}</td>
+    </tr>`;
+  }).join("");
+}
+
+function renderCharts(records) {
+  // Por área
+  const areas = {};
+  records.forEach(r => { if (r.area) areas[r.area] = (areas[r.area]||0) + 1; });
+  const sortedA = Object.entries(areas).sort((a,b) => b[1]-a[1]).slice(0,8);
+  const maxA = sortedA[0] ? sortedA[0][1] : 1;
+  let ahtml = '<div class="bar-title">Participantes por agencia / área</div>';
+  if (sortedA.length) {
+    sortedA.forEach(([a, c]) => {
+      ahtml += `<div class="bar-row"><span class="bar-label">${a}</span><div class="bar-track"><div class="bar-fill" style="width:${Math.round(c/maxA*100)}%"></div></div><span class="bar-count">${c}</span></div>`;
+    });
+  } else { ahtml += '<p style="font-size:12px;color:var(--t3)">Sin datos aún.</p>'; }
+  document.getElementById("areaChart").innerHTML = ahtml;
+
+  // Por nivel
+  const lvls = { "Proceso certificado": 0, "En desarrollo": 0, "Básico": 0 };
+  records.forEach(r => { if (lvls[r.nivel] !== undefined) lvls[r.nivel]++; });
+  const maxL = Math.max(...Object.values(lvls), 1);
+  const lvlClass = { "Proceso certificado": "", "En desarrollo": "azul", "Básico": "dorado" };
+  let lhtml = '<div class="bar-title">Distribución por nivel</div>';
+  Object.entries(lvls).forEach(([lvl, cnt]) => {
+    lhtml += `<div class="bar-row"><span class="bar-label">${lvl}</span><div class="bar-track"><div class="bar-fill ${lvlClass[lvl]}" style="width:${Math.round(cnt/maxL*100)}%"></div></div><span class="bar-count">${cnt}</span></div>`;
+  });
+  document.getElementById("levelChart").innerHTML = lhtml;
+}
+
+function switchTab(id) {
+  document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
+  document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  document.getElementById(id + "-btn").classList.add("active");
+}
+
+async function exportCSV() {
+  try {
+    const res = await fetch(AT_URL + "?maxRecords=200", { headers: AT_HEADS });
+    const data = await res.json();
+    const records = (data.records || []).map(r => r.fields);
+    if (!records.length) { alert("No hay resultados para exportar."); return; }
+    const headers = ["Nombre","Cedula","Agencia/Area","Correctas","Total","Porcentaje","Puntos","Nivel","Fecha","Detalle"];
+    const rows = records.map(r => [
+      `"${r.nombre||''}"`, r.cedula||'', `"${r.area||''}"`,
+      r.correctas||0, r.total||5, r.porcentaje||0, r.puntos||0,
+      `"${r.nivel||''}"`, `"${r.fecha||''}"`, `"${r.detalle||''}"`
+    ].join(","));
+    const csv = [headers.join(","), ...rows].join("\n");
+    const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a"); a.href = url;
+    a.download = `resultados_evaluacion_cacpe_${new Date().toISOString().slice(0,10)}.csv`;
+    a.click(); URL.revokeObjectURL(url);
+  } catch(e) { alert("Error al exportar. Verifica la conexión."); }
+}
+
+function saveConfig() {
+  CFG.deadline = document.getElementById("cfgDeadline").value || null;
+  CFG.minScore = parseInt(document.getElementById("cfgMinScore").value) || 60;
+  CFG.pass = document.getElementById("cfgPass").value || "cacpe2025";
+  saveCFG();
+  const m = document.getElementById("cfgMsg");
+  m.style.display = "block";
+  setTimeout(() => m.style.display = "none", 2000);
+}
+
+async function confirmClear() {
+  if (!confirm("¿Seguro que quieres eliminar TODOS los resultados de Airtable? Esta acción no se puede deshacer.")) return;
+  try {
+    const res = await fetch(AT_URL + "?maxRecords=200", { headers: AT_HEADS });
+    const data = await res.json();
+    const ids = (data.records || []).map(r => r.id);
+    if (!ids.length) { alert("No hay registros para eliminar."); return; }
+    // Airtable permite eliminar hasta 10 a la vez
+    for (let i = 0; i < ids.length; i += 10) {
+      const batch = ids.slice(i, i + 10);
+      const params = batch.map(id => `records[]=${id}`).join("&");
+      await fetch(`${AT_URL}?${params}`, { method: "DELETE", headers: AT_HEADS });
+    }
+    await loadAdmin();
+    alert("Registros eliminados correctamente.");
+  } catch(e) { alert("Error al eliminar. Verifica la conexión."); }
+}
+</script>
+</body>
+</html>
