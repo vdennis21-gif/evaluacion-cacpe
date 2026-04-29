@@ -964,9 +964,9 @@ async function loadAdmin() {
 
 function renderKPIs(records) {
   const total = records.length;
-  const aprobados = records.filter(r => r.nivel !== "Básico").length;
+  const aprobados = records.filter(r => (r.NIVEL||r.nivel) !== "Básico").length;
   const reprobados = total - aprobados;
-  const avg = total > 0 ? Math.round(records.reduce((s,r) => s + (r.porcentaje||0), 0) / total) : 0;
+  const avg = total > 0 ? Math.round(records.reduce((s,r) => s + (r.PORCENTAJE||r.porcentaje||0), 0) / total) : 0;
   document.getElementById("kpiGrid").innerHTML = [
     [total, "Participantes"],
     [aprobados, "Aprobaron"],
@@ -982,15 +982,16 @@ function renderTable(records) {
     return;
   }
   tb.innerHTML = records.map(r => {
-    const lc = r.nivel === "Proceso certificado" ? "badge-cert" : r.nivel === "En desarrollo" ? "badge-dev" : "badge-bas";
+    const nivel = r.NIVEL || r.nivel || '';
+    const lc = nivel === "Proceso certificado" ? "badge-cert" : nivel === "En desarrollo" ? "badge-dev" : "badge-bas";
     return `<tr>
-      <td>${r.nombre||''}</td>
-      <td>${r.cedula||''}</td>
-      <td>${r.area||''}</td>
-      <td style="text-align:center">${r.correctas||0}/${r.total||5}</td>
-      <td style="text-align:center">${r.porcentaje||0}%</td>
-      <td><span class="badge ${lc}">${r.nivel||''}</span></td>
-      <td style="font-size:11px;white-space:nowrap">${r.fecha||''}</td>
+      <td>${r.NOMBRE||r.nombre||''}</td>
+      <td>${r.CEDULA||r.cedula||''}</td>
+      <td>${r.AREA||r.area||''}</td>
+      <td style="text-align:center">${r.CORRECTAS||r.correctas||0}/${r.TOTAL||r.total||5}</td>
+      <td style="text-align:center">${r.PORCENTAJE||r.porcentaje||0}%</td>
+      <td><span class="badge ${lc}">${nivel}</span></td>
+      <td style="font-size:11px;white-space:nowrap">${r.FECHA||r.fecha||''}</td>
     </tr>`;
   }).join("");
 }
@@ -998,7 +999,7 @@ function renderTable(records) {
 function renderCharts(records) {
   // Por área
   const areas = {};
-  records.forEach(r => { if (r.area) areas[r.area] = (areas[r.area]||0) + 1; });
+  records.forEach(r => { const a = r.AREA||r.area; if (a) areas[a] = (areas[a]||0) + 1; });
   const sortedA = Object.entries(areas).sort((a,b) => b[1]-a[1]).slice(0,8);
   const maxA = sortedA[0] ? sortedA[0][1] : 1;
   let ahtml = '<div class="bar-title">Participantes por agencia / área</div>';
@@ -1011,7 +1012,7 @@ function renderCharts(records) {
 
   // Por nivel
   const lvls = { "Proceso certificado": 0, "En desarrollo": 0, "Básico": 0 };
-  records.forEach(r => { if (lvls[r.nivel] !== undefined) lvls[r.nivel]++; });
+  records.forEach(r => { const n = r.NIVEL||r.nivel; if (lvls[n] !== undefined) lvls[n]++; });
   const maxL = Math.max(...Object.values(lvls), 1);
   const lvlClass = { "Proceso certificado": "", "En desarrollo": "azul", "Básico": "dorado" };
   let lhtml = '<div class="bar-title">Distribución por nivel</div>';
