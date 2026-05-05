@@ -950,7 +950,7 @@ function checkAdmin() {
 async function loadAdmin() {
   document.getElementById("adminLastUpdate").textContent = "Actualizando...";
   try {
-    const res = await fetch(PROXY_URL);
+    const res = await fetch(PROXY_URL, { mode: "cors" });
     const data = await res.json();
     const records = (data.records || []).map(r => r.fields);
     renderKPIs(records);
