@@ -650,13 +650,56 @@ const AT_TABLE = "tblpaAt5c28wvgvTa";
 const AT_URL   = `https://api.airtable.com/v0/${AT_BASE}/${AT_TABLE}`;
 const AT_HEADS = { "Authorization": `Bearer ${AT_TOKEN}`, "Content-Type": "application/json" };
 const PROXY_URL = "https://script.google.com/macros/s/AKfycbxmpIl4FfEfZq-5BYXvYsJjh7n1b9cFjYLGEGYvPfRCD4rLBSOFM3e4j4AU8IZSTDYkFQ/exec";
+const AT_CFG_TABLE = "tblCSm52LqbFUhTWa";
+const AT_CFG_URL = `https://api.airtable.com/v0/${AT_BASE}/${AT_CFG_TABLE}`;
 
 // ════════════════════════════════════════
 // CONFIG LOCAL
 // ════════════════════════════════════════
 let CFG = { deadline: null, minScore: 60, pass: "cacpe2025" };
-function loadCFG() { try { const s = localStorage.getItem("cacpe_cfg"); if (s) CFG = { ...CFG, ...JSON.parse(s) }; } catch(e){} }
-function saveCFG() { try { localStorage.setItem("cacpe_cfg", JSON.stringify(CFG)); } catch(e){} }
+async function loadCFG() {
+  try {
+    const res = await fetch(AT_CFG_URL + "?maxRecords=10", {
+      mode: "cors",
+      headers: { "Authorization": "Bearer " + AT_TOKEN }
+    });
+    const data = await res.json();
+    if (data.records) {
+      data.records.forEach(r => {
+        const p = r.fields.PARAMETRO;
+        const v = r.fields.VALOR;
+        if (p === "deadline") CFG.deadline = v || null;
+        if (p === "minScore") CFG.minScore = parseInt(v) || 60;
+        if (p === "pass") CFG.pass = v || "cacpe2025";
+        if (p) CFG._ids = CFG._ids || {};
+        if (p) CFG._ids[p] = r.id;
+      });
+    }
+  } catch(e) {
+    try { const s = localStorage.getItem("cacpe_cfg"); if (s) CFG = { ...CFG, ...JSON.parse(s) }; } catch(e2){}
+  }
+}
+async function saveCFG() {
+  try {
+    const updates = [];
+    if (CFG._ids) {
+      if (CFG._ids.deadline) updates.push({ id: CFG._ids.deadline, fields: { VALOR: CFG.deadline || "" } });
+      if (CFG._ids.minScore) updates.push({ id: CFG._ids.minScore, fields: { VALOR: String(CFG.minScore) } });
+      if (CFG._ids.pass) updates.push({ id: CFG._ids.pass, fields: { VALOR: CFG.pass } });
+      if (updates.length) {
+        await fetch(AT_CFG_URL, {
+          method: "PATCH",
+          mode: "cors",
+          headers: { "Authorization": "Bearer " + AT_TOKEN, "Content-Type": "application/json" },
+          body: JSON.stringify({ records: updates })
+        });
+      }
+    }
+    localStorage.setItem("cacpe_cfg", JSON.stringify(CFG));
+  } catch(e) {
+    try { localStorage.setItem("cacpe_cfg", JSON.stringify(CFG)); } catch(e2){}
+  }
+}
 
 // ════════════════════════════════════════
 // PREGUNTAS
@@ -716,7 +759,8 @@ let participant = {}, answered = [];
 // ════════════════════════════════════════
 // INICIALIZACIÓN
 // ════════════════════════════════════════
-loadCFG();
+(async () => {
+await loadCFG();
 if (CFG.deadline && new Date() > new Date(CFG.deadline)) {
   showPage("pgExpired");
 } else {
@@ -727,6 +771,7 @@ if (CFG.deadline && new Date() > new Date(CFG.deadline)) {
       "Fecha límite: " + dl.toLocaleDateString("es-EC", { day:"2-digit", month:"long", year:"numeric", hour:"2-digit", minute:"2-digit" });
   }
 }
+})();
 
 // ════════════════════════════════════════
 // NAVEGACIÓN
