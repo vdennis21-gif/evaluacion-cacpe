@@ -949,7 +949,7 @@ function checkAdmin() {
 async function loadAdmin() {
   document.getElementById("adminLastUpdate").textContent = "Actualizando...";
   try {
-    const res = await fetch(AT_URL + "?maxRecords=200&sort%5B0%5D%5Bfield%5D=fecha&sort%5B0%5D%5Bdirection%5D=desc", { mode: "cors", headers: { "Authorization": "Bearer " + AT_TOKEN } });
+    const res = await fetch(AT_URL + "?maxRecords=200", { mode: "cors", headers: { "Authorization": "Bearer " + AT_TOKEN } });
     const data = await res.json();
     const records = (data.records || []).map(r => r.fields);
     renderKPIs(records);
