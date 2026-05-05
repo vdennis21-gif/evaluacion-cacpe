@@ -952,7 +952,7 @@ async function loadAdmin() {
   try {
     const res = await fetch(PROXY_URL, { mode: "cors" });
     const data = await res.json();
-    const records = (data.records || []).map(r => r.fields);
+    const records = (data.records || []).map(r => r.fields).filter(r => r && Object.keys(r).length > 0);
     renderKPIs(records);
     renderTable(records);
     renderCharts(records);
@@ -1032,9 +1032,9 @@ function switchTab(id) {
 
 async function exportCSV() {
   try {
-    const res = await fetch(PROXY_URL);
+    const res = await fetch(PROXY_URL, { mode: "cors" });
     const data = await res.json();
-    const records = (data.records || []).map(r => r.fields);
+    const records = (data.records || []).map(r => r.fields).filter(r => r && Object.keys(r).length > 0);
     if (!records.length) { alert("No hay resultados para exportar."); return; }
     const headers = ["Nombre","Cedula","Agencia/Area","Correctas","Total","Porcentaje","Puntos","Nivel","Fecha","Detalle"];
     const rows = records.map(r => [
@@ -1064,7 +1064,7 @@ function saveConfig() {
 async function confirmClear() {
   if (!confirm("¿Seguro que quieres eliminar TODOS los resultados de Airtable? Esta acción no se puede deshacer.")) return;
   try {
-    const res = await fetch(AT_URL + "?maxRecords=200", { mode: "cors", headers: { "Authorization": "Bearer " + AT_TOKEN } });
+    const res = await fetch(PROXY_URL, { mode: "cors" });
     const data = await res.json();
     const ids = (data.records || []).map(r => r.id);
     if (!ids.length) { alert("No hay registros para eliminar."); return; }
