@@ -646,6 +646,7 @@ const AT_BASE  = "appE7P33pfvpyMiiA";
 const AT_TABLE = "tblpaAt5c28wvgvTa";
 const AT_URL   = `https://api.airtable.com/v0/${AT_BASE}/${AT_TABLE}`;
 const AT_HEADS = { "Authorization": `Bearer ${AT_TOKEN}`, "Content-Type": "application/json" };
+const PROXY_URL = "https://script.google.com/macros/s/AKfycbxmpIl4FfEfZq-5BYXvYsJjh7n1b9cFjYLGEGYvPfRCD4rLBSOFM3e4j4AU8IZSTDYkFQ/exec";
 
 // ════════════════════════════════════════
 // CONFIG LOCAL
@@ -949,7 +950,7 @@ function checkAdmin() {
 async function loadAdmin() {
   document.getElementById("adminLastUpdate").textContent = "Actualizando...";
   try {
-    const res = await fetch(AT_URL + "?maxRecords=200", { mode: "cors", headers: { "Authorization": "Bearer " + AT_TOKEN } });
+    const res = await fetch(PROXY_URL);
     const data = await res.json();
     const records = (data.records || []).map(r => r.fields);
     renderKPIs(records);
@@ -1031,7 +1032,7 @@ function switchTab(id) {
 
 async function exportCSV() {
   try {
-    const res = await fetch(AT_URL + "?maxRecords=200", { mode: "cors", headers: { "Authorization": "Bearer " + AT_TOKEN } });
+    const res = await fetch(PROXY_URL);
     const data = await res.json();
     const records = (data.records || []).map(r => r.fields);
     if (!records.length) { alert("No hay resultados para exportar."); return; }
